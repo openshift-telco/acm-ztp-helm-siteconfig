@@ -1,0 +1,612 @@
+apiVersion: ran.openshift.io/v1
+kind: SiteConfig
+metadata:
+  name: "demo"
+  namespace: "demo"
+spec:
+  baseDomain: "tmetse.bos2.lab"
+  pullSecretRef:
+    name: "assisted-deployment-pull-secret"
+  clusterImageSetNameRef: "openshift-v4.12.23-disconnected"
+  sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDgexmgIbvhy8H4I2xx0GRFId3VZgBTwRuCjufMcwxIg77t9LkC4WAV5vSqYdrxkyHPr1fyxvm1RDVmsOudndXKMrCAIF53M8izcFPDcOwmr037Z8/2HPJfB7JgnuN85W/0zUNuYwUVeKfpiLg3FOaTf4piU7Ql4X2Zlyi3cemmr0n0ctSLQlNB3bb8FyCyc+t5l3DrdhuNG43xBOada6ZHT+Kw3ybKANziVemEFYEL/7N8ovq5f1P0rKZvpl5IpR8SvSnBwLGEkhBu2x/rHBCm5ahxgvTbqeExfFKSiW0YJkIkpbm7bUstSvIOQ6Bni65wxxERwas3JKmakQSRVHJkcVzLhPNUA3PYgcobyiJJ0+BiPywtGoXwKBoT+B4q7V1lb8+U5phmS7+G1T/9+ZsvFpnrxkDV9in//r1ibuaOzvvbJA/ZHQGk4norrwIUafWYx07tBQ5jUFgUfJ1J1zolpyIoGVge4K1xa01kd/LO2p3rrIGhGHpObNF8O5eDEzM= tmeadmin@kvm01.tmetse.bos2.lab"
+  clusters:
+  - clusterName: "demo"
+    networkType: "OVNKubernetes"
+    clusterLabels:
+      # These example cluster labels correspond to the bindingRules in the PolicyGenTemplate examples in ../policygentemplates:
+      # ../policygentemplates/common-ranGen.yaml will apply to all clusters with 'common: true'
+      #common-mno: true
+      ## ../policygentemplates/group-du-sno-ranGen.yaml will apply to all clusters with 'group-du-sno: ""'
+      #group-du-mno: ""
+      # ../policygentemplates/sno415-01-site.yaml will apply to all clusters with 'sites: "sno415-01"'
+      # Normally this should match or contain the cluster name so it only applies to a single cluster
+      #sites: "demo"
+      blueprint-demo: "true"
+      mcp-w-dell-650-i: "true"
+      mcp-w-dell-750-i: "true"
+      mcp-w-dell-750-m: "true"
+      sriov: "true"
+    extraManifestPath: blueprint
+    extraManifests:
+      filter:
+        inclusionDefault: exclude
+        include:
+          - CS.yaml
+          - ICSP.yaml
+    clusterNetwork:
+      - cidr: 10.128.0.0/14
+        hostPrefix: 23
+    machineNetwork:
+      - cidr: 100.65.211.0/24
+    # For 3-node and standard clusters with static IPs, the API and Ingress IPs must be configured here
+    apiVIP: 100.65.211.100
+    ingressVIP: 100.65.211.101
+    serviceNetwork:
+      - 172.30.0.0/16
+    additionalNTPSources:
+      - 216.239.35.12
+    # Optionally; This can be used to override the KlusterletAddonConfig that is created for this cluster:
+    #crTemplates:
+    #  KlusterletAddonConfig: "KlusterletAddonConfigOverride.yaml"
+    # Optionally; This can be used to to configure desired BIOS setting on all nodes in this cluster:
+    #biosConfigRef:
+    #  filePath: "example-hw.profile"
+    ################################################################
+    nodes:
+      - hostName: "master1.demo.tmetse.bos2.lab"
+        role: "master"
+        bmcAddress: "redfish-virtualmedia+http://192.168.52.57:8080/redfish/v1/Systems/69f5f6cd-36c7-48c4-9afd-0d18d81dce28"
+        bmcCredentialsName:
+          name: "bmc-secret-master1"
+        bootMACAddress: "52:54:00:3d:aa:72"
+        # Use UEFISecureBoot to enable secure boot for this node
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: '/dev/sda'
+        nodeNetwork:
+          interfaces:
+            - name: enp1s0
+              macAddress: "52:54:00:3d:aa:72"
+            - name: enp2s0
+              macAddress: "52:54:01:3d:aa:72"
+          config:
+            interfaces:
+              - name: enp1s0
+                type: ethernet
+                state: up
+                macAddress: "52:54:00:3d:aa:72"
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.203
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: enp2s0
+                type: ethernet
+                state: up
+                macAddress: "52:54:01:3d:aa:72"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: enp1s0
+                next-hop-address: 100.65.211.1
+                table-id: 254
+      - hostName: "master2.demo.tmetse.bos2.lab"
+        role: "master"
+        bmcAddress: "redfish-virtualmedia+http://192.168.52.56:8080/redfish/v1/Systems/40097440-38f2-495a-ad91-505ae84b669a"
+        bmcCredentialsName:
+          name: "bmc-secret-master2"
+        bootMACAddress: "52:54:00:89:ac:81"
+        # Use UEFISecureBoot to enable secure boot for this node
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: '/dev/sda'
+        nodeNetwork:
+          interfaces:
+            - name: enp1s0
+              macAddress: "52:54:00:89:ac:81"
+            - name: enp2s0
+              macAddress: "52:54:01:89:ac:81"
+          config:
+            interfaces:
+              - name: enp1s0
+                type: ethernet
+                state: up
+                macAddress: "52:54:00:89:ac:81"
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.204
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: enp2s0
+                type: ethernet
+                state: up
+                macAddress: "52:54:01:89:ac:81"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: enp1s0
+                next-hop-address: 100.65.211.1
+                table-id: 254
+      - hostName: "master3.demo.tmetse.bos2.lab"
+        role: "master"
+        bmcAddress: "redfish-virtualmedia+http://192.168.52.55:8080/redfish/v1/Systems/3cdf7eb2-8fbf-4d70-a756-cd83b33847fd"
+        bmcCredentialsName:
+          name: "bmc-secret-master3"
+        bootMACAddress: "52:54:00:e5:cc:49"
+        # Use UEFISecureBoot to enable secure boot for this node
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: '/dev/sda'
+        nodeNetwork:
+          interfaces:
+            - name: enp1s0
+              macAddress: "52:54:00:e5:cc:49"
+            - name: enp2s0
+              macAddress: "52:54:01:e5:cc:49"
+          config:
+            interfaces:
+              - name: enp1s0
+                type: ethernet
+                state: up
+                macAddress: "52:54:00:e5:cc:49"
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.205
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: enp2s0
+                type: ethernet
+                state: up
+                macAddress: "52:54:01:e5:cc:49"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: enp1s0
+                next-hop-address: 100.65.211.1
+                table-id: 254
+      - hostName: "worker1.demo.tmetse.bos2.lab"
+        role: "worker"
+        bmcAddress: "redfish-virtualmedia+https://192.168.52.159/redfish/v1/Systems/System.Embedded.1"
+        bmcCredentialsName:
+          name: "bmc-secret-worker1"
+        bootMACAddress: "b4:96:91:bb:dc:5c"
+        # Use UEFISecureBoot to enable secure boot for this node
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: '/dev/sda'
+        #cpuset: "0-7,64-71"
+        nodeNetwork:
+          interfaces:
+            - name: eno12399
+              macAddress: "b4:96:91:bb:dc:5c"
+            - name: ens1f0
+              macAddress: "b4:96:91:a5:01:b0"
+            - name: ens2f0
+              macAddress: "b4:96:91:a5:00:7c"
+          config:
+            interfaces:
+              - name: eno12399
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:bb:dc:5c"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: eno12399.211
+                type: vlan
+                state: up
+                vlan:
+                  base-iface: eno12399
+                  id: 211
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.159
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: ens1f0
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:a5:01:b0"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: ens2f0
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:a5:00:7c"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: eno12399.211
+                next-hop-address: 100.65.211.1
+                table-id: 254
+      - hostName: "worker2.demo.tmetse.bos2.lab"
+        role: "worker"
+        bmcAddress: "redfish-virtualmedia+https://192.168.52.160/redfish/v1/Systems/System.Embedded.1"
+        bmcCredentialsName:
+          name: "bmc-secret-worker2"
+        bootMACAddress: "b4:96:91:bb:d9:90"
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: '/dev/sda'
+        nodeNetwork:
+          interfaces:
+            - name: eno12399
+              macAddress: "b4:96:91:bb:d9:90"
+            - name: ens1f0
+              macAddress: "b4:96:91:a5:00:b4"
+            - name: ens2f0
+              macAddress: "b4:96:91:a5:02:78"
+          config:
+            interfaces:
+              - name: eno12399
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:bb:d9:90"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: eno12399.211
+                type: vlan
+                state: up
+                vlan:
+                  base-iface: eno12399
+                  id: 211
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.160
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: ens1f0
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:a5:00:b4"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: ens2f0
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:a5:02:78"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: eno12399.211
+                next-hop-address: 100.65.211.1
+                table-id: 254
+      - hostName: "worker3.demo.tmetse.bos2.lab"
+        role: "worker"
+        bmcAddress: "redfish-virtualmedia+https://192.168.52.161/redfish/v1/Systems/System.Embedded.1"
+        bmcCredentialsName:
+          name: "bmc-secret-worker3"
+        bootMACAddress: "b4:96:91:bb:d7:5a"
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: '/dev/sda'
+        nodeNetwork:
+          interfaces:
+            - name: eno12399
+              macAddress: "b4:96:91:bb:d7:5a"
+            - name: ens1f0
+              macAddress: "b4:96:91:a3:f2:84"
+            - name: ens2f0
+              macAddress: "b4:96:91:a3:f2:54"
+          config:
+            interfaces:
+              - name: eno12399
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:bb:d7:5a"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: eno12399.211
+                type: vlan
+                state: up
+                vlan:
+                  base-iface: eno12399
+                  id: 211
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.161
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: ens1f0
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:a3:f2:84"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: ens2f0
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:a3:f2:54"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: eno12399.211
+                next-hop-address: 100.65.211.1
+                table-id: 254
+      - hostName: "worker4.demo.tmetse.bos2.lab"
+        #role: "mcp-w-du-dell-750-i"
+        role: "worker"
+        # Optionally; This can be used to configure desired BIOS setting on a host:
+        #biosConfigRef:
+        #  filePath: "example-hw.profile"
+        bmcAddress: "redfish-virtualmedia+https://192.168.52.170/redfish/v1/Systems/System.Embedded.1"
+        bmcCredentialsName:
+          name: "bmc-secret-worker4"
+        bootMACAddress: "b4:96:91:c7:f5:26"
+        # Use UEFISecureBoot to enable secure boot
+        bootMode: "UEFI"
+        rootDeviceHints: 
+        #  wwn: "0x6f4ee08007fb8d00297b6877da9fc526"
+          deviceName: /dev/sda
+        # match the value with PerformanceProfile's .spec.cpu.reserved for workload partitioning. See /example/policygentemplates/group-du-sno-ranGen.yaml
+        #cpuset: "0-1,32-33"
+        nodeNetwork:
+          interfaces:
+            - name: ens2f0
+              macAddress: "b4:96:91:c7:f5:26"
+            - name: ens2f1
+              macAddress: "b4:96:91:c7:f5:27"
+            - name: eno12399
+              macAddress: "b4:96:91:d3:7f:20"
+            - name: eno12409
+              macAddress: "b4:96:91:d3:7f:21"
+          config:
+            interfaces:
+              - name: bond0
+                type: bond
+                state: up
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+                link-aggregation:
+                  mode: 802.3ad
+                  options:
+                    miimon: "100"
+                    lacp_rate: "slow"
+                  port:
+                   - ens2f1
+                   - eno12409
+              - name: bond0.211
+                type: vlan
+                state: up
+                vlan:
+                  base-iface: bond0
+                  id: 211
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.170
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: ens2f0
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:c7:f5:26"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: ens2f1
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:c7:f5:27"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: eno12399
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:d3:7f:20"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: eno12409
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:d3:7f:21"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+                #- 1111:2222:3333:4444::2
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: bond0.211
+                next-hop-address: 100.65.211.1
+                table-id: 254
+      - hostName: "worker5.demo.tmetse.bos2.lab"
+        #role: "mcp-w-du-dell-750-m"
+        role: "worker"
+        # Optionally; This can be used to configure desired BIOS setting on a host:
+        #biosConfigRef:
+        #  filePath: "example-hw.profile"
+        bmcAddress: "redfish-virtualmedia+https://192.168.52.172/redfish/v1/Systems/System.Embedded.1"
+        bmcCredentialsName:
+          name: "bmc-secret-worker5"
+        bootMACAddress: "08:c0:eb:36:ed:08"
+        # Use UEFISecureBoot to enable secure boot
+        bootMode: "UEFI"
+        rootDeviceHints: 
+        #  wwn: "0x6f4ee08007fb8d00297b6877da9fc526"
+          deviceName: /dev/sda
+        # match the value with PerformanceProfile's .spec.cpu.reserved for workload partitioning. See /example/policygentemplates/group-du-sno-ranGen.yaml
+        #cpuset: "0-1,32-33"
+        nodeNetwork:
+          interfaces:
+            - name: ens2f0
+              macAddress: "08:c0:eb:36:ed:08"
+            - name: ens2f1
+              macAddress: "08:c0:eb:36:ed:09"
+            - name: eno12399
+              macAddress: "b4:96:91:d6:79:9c"
+            - name: eno12409
+              macAddress: "b4:96:91:d6:79:9d"
+          config:
+            interfaces:
+              - name: bond0
+                type: bond
+                state: up
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+                link-aggregation:
+                  mode: 802.3ad
+                  options:
+                    miimon: "100"
+                    lacp_rate: "slow"
+                  port:
+                   - ens2f1
+                   - eno12409
+              - name: bond0.211
+                type: vlan
+                state: up
+                vlan:
+                  base-iface: bond0
+                  id: 211
+                ipv4:
+                  enabled: true
+                  address:
+                  - ip: 100.65.211.172
+                    prefix-length: 24
+                ipv6:
+                  enabled: false
+              - name: ens2f0
+                type: ethernet
+                state: up
+                macAddress: "08:c0:eb:36:ed:08"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: ens2f1
+                type: ethernet
+                state: up
+                macAddress: "08:c0:eb:36:ed:09"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: eno12399
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:d6:79:9c"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+              - name: eno12409
+                type: ethernet
+                state: up
+                macAddress: "b4:96:91:d6:79:9d"
+                ipv4:
+                  enabled: false
+                ipv6:
+                  enabled: false
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+                #- 1111:2222:3333:4444::2
+            routes:
+              config:
+              - destination: 0.0.0.0/0
+                next-hop-interface: bond0.211
+                next-hop-address: 100.65.211.1
+                table-id: 254

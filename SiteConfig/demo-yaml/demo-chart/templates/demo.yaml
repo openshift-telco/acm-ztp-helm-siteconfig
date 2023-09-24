@@ -1,0 +1,140 @@
+---
+apiVersion: ran.openshift.io/v1
+kind: SiteConfig
+metadata:
+  name: "demo"
+  namespace: "demo"
+spec:
+  baseDomain: "tmetse.bos2.lab"
+  pullSecretRef:
+    name: "assisted-deployment-pull-secret"
+  clusterImageSetNameRef: "openshift-v4.12.23-disconnected"
+  sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDgexmgIbvhy8H4I2xx0GRFId3VZgBTwRuCjufMcwxIg77t9LkC4WAV5vSqYdrxkyHPr1fyxvm1RDVmsOudndXKMrCAIF53M8izcFPDcOwmr037Z8/2HPJfB7JgnuN85W/0zUNuYwUVeKfpiLg3FOaTf4piU7Ql4X2Zlyi3cemmr0n0ctSLQlNB3bb8FyCyc+t5l3DrdhuNG43xBOada6ZHT+Kw3ybKANziVemEFYEL/7N8ovq5f1P0rKZvpl5IpR8SvSnBwLGEkhBu2x/rHBCm5ahxgvTbqeExfFKSiW0YJkIkpbm7bUstSvIOQ6Bni65wxxERwas3JKmakQSRVHJkcVzLhPNUA3PYgcobyiJJ0+BiPywtGoXwKBoT+B4q7V1lb8+U5phmS7+G1T/9+ZsvFpnrxkDV9in//r1ibuaOzvvbJA/ZHQGk4norrwIUafWYx07tBQ5jUFgUfJ1J1zolpyIoGVge4K1xa01kd/LO2p3rrIGhGHpObNF8O5eDEzM= tmeadmin@kvm01.tmetse.bos2.lab"
+  clusters:
+  - clusterName: "demo"
+    networkType: "OVNKubernetes"
+    clusterLabels:
+      blueprint-demo: "true"
+      mcp-w-dell-650-i: "true"
+      mcp-w-dell-750-i: "true"
+      mcp-w-dell-750-m: "true"
+      sriov: "true"
+    extraManifestPath: blueprint
+    extraManifests:
+      filter:
+        inclusionDefault: exclude
+        include:
+          - CS.yaml
+          - ICSP.yaml
+    clusterNetwork:
+      - cidr: 10.128.0.0/14
+        hostPrefix: 23
+    machineNetwork:
+      - cidr: 100.65.211.0/24
+    apiVIP: 100.65.211.100
+    ingressVIP: 100.65.211.101
+    serviceNetwork:
+      - 172.30.0.0/16
+    additionalNTPSources:
+      - 216.239.35.12
+    nodes:
+{{- range $.Values.nodes }}
+      - hostName: {{ .hostName | quote }}
+  {{- if eq (toString .role) "master" }}
+        role: "master"
+  {{- else }}
+        role: "worker"
+  {{- end }}
+        bmcAddress: {{ .bmcAddress | quote}}
+        bmcCredentialsName:
+          name: "bmc-{{ .hostName }}"
+        bootMACAddress: {{ .bootMACAddress | quote }}
+        bootMode: "UEFI"
+        rootDeviceHints:
+          deviceName: '/dev/sda'
+        nodeNetwork:
+          interfaces:
+  {{- range .interfaces }}
+    {{- $type := .type | default "ethernet" -}}
+    {{- if eq (toString $type) "ethernet" }}
+            - name: {{ .name  }}
+              macAddress: {{ .mac | quote }}
+    {{- end }}
+  {{- end }}
+          config:
+            interfaces:
+  {{- range .interfaces }}
+    {{- $name := .name -}}
+    {{- $type := .type | default "ethernet" -}}
+    {{- $vlans := .vlans | default false -}}
+    {{- $ipaddress := .IP | default false -}}
+    {{- $prefix := .prefix_length | default 24 }}
+              - name: {{ $name }}
+                type: {{ $type }}
+                state: up
+    {{- if ne (toString $type) "bond" }}
+                macAddress: {{ .mac | quote }}
+    {{- end }}
+                ipv6:
+                  enabled: false
+    {{- if eq (toString $ipaddress) "false" }}
+                ipv4:
+                  enabled: false
+    {{- else }}
+                ipv4:
+                  enabled: true
+                  address:
+                    - ip: {{ $ipaddress }}
+                      prefix-length: {{ $prefix }}
+    {{- end -}}
+    {{- if eq (toString $type) "bond" }}
+                link-aggregation:
+                  mode: 802.3ad
+                  options:
+                    miimon: "100"
+                    lacp_rate: "slow"
+                  port:
+      {{- range .ports }}
+                  - {{ .name }}
+      {{- end }}
+    {{- end -}}
+    {{- if ne (toString $vlans) "false" }}
+      {{- range .vlans }}
+        {{- $vlanip := .IP | default false -}}
+        {{- $vlanprefix := .prefix_length | default 24 }}
+              - name: {{ $name }}.{{ .vlan }}
+                type: vlan
+                state: up
+                vlan:
+                  base-iface: {{ $name }}
+                  id: {{ .vlan }}
+                ipv6:
+                  enabled: false
+        {{- if eq (toString $vlanip) "false" }}
+                ipv4:
+                  enabled: false
+        {{- else }}
+                ipv4:
+                  enabled: true
+                  address:
+                    - ip: {{ $vlanip }}
+                      prefix-length: {{ $vlanprefix }}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end }}
+            dns-resolver:
+              config:
+                search:
+                - tmetse.bos2.lab
+                server:
+                - 192.168.52.120
+            routes:
+              config:
+  {{- range .routes }}
+              - destination: {{ .destination  }}
+                next-hop-interface: {{ .interface  }}
+                next-hop-address: {{ .next_hop  }}
+                table-id: 254
+  {{- end -}}
+{{- end }}

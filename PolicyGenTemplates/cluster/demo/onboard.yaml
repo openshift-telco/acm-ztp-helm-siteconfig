@@ -1,0 +1,43 @@
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "cl-demo-onboard"
+  namespace: "ztp-site"
+spec:
+  bindingRules:
+    # These policies will correspond to all clusters with this label:
+    blueprint-demo: "true"
+  #mcp: "mcp-w-dell-750-i"
+  sourceFiles:
+    - fileName: SriovNetwork.yaml
+      policyName: "tenants"
+      metadata:
+        name: "sriov-nw-netd-1144"
+      spec:
+        networkNamespace: default
+        resourceName: sriov_netd
+        vlan: 1144
+    - fileName: SriovNetwork.yaml
+      policyName: "tenants"
+      metadata:
+        name: "sriov-nw-vfio-1144"
+      spec:
+        networkNamespace: default
+        resourceName: sriov_vfio
+        vlan: 1144
+    - fileName: SriovNetwork.yaml
+      policyName: "tenants"
+      metadata:
+        name: "sriov-nw-netd-1145"
+      spec:
+        networkNamespace: default
+        resourceName: sriov_netd
+        vlan: 1145
+    - fileName: SriovNetwork.yaml
+      policyName: "tenants"
+      metadata:
+        name: "sriov-nw-vfio-1145"
+      spec:
+        networkNamespace: default
+        resourceName: sriov_vfio
+        vlan: 1145

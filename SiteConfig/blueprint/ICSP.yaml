@@ -1,0 +1,29 @@
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  annotations:
+    target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+    ran.openshift.io/ztp-deploy-wave: "1"
+    operators.openshift.org/catalog: "true"
+  name: redhat-operator-index-0
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - lab-registry.mgmt.tmetse.bos2.lab/cache-registryredhatio
+    source: registry.redhat.io
+  - mirrors:
+    - lab-registry.mgmt.tmetse.bos2.lab/gitops_mgmt
+    source: quay.io/openshift
+  - mirrors:
+    - lab-registry.mgmt.tmetse.bos2.lab/gitops_mgmt
+    source: quay.io/edge-infrastructure
+  - mirrors:
+    - lab-registry.mgmt.tmetse.bos2.lab/gitops_mgmt
+    source: quay.io/ocpmetal
+  - mirrors:
+    - lab-registry.mgmt.tmetse.bos2.lab/gitops_mgmt/openshift4-release
+    source: quay.io/openshift-release-dev/ocp-release
+  - mirrors:
+    - lab-registry.mgmt.tmetse.bos2.lab/gitops_mgmt/openshift4-release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev

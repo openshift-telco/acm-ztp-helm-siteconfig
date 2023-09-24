@@ -1,0 +1,116 @@
+---
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "cluster-core"
+  namespace: "ztp-site"
+spec:
+  bindingRules:
+    # These policies will correspond to all clusters with this label:
+    sites: "core"
+  sourceFiles:
+    # Create policies that will be installed only in a specific cluster
+
+    #
+    # Label node for Storage
+    #
+    - fileName: LABEL/LabelNodeOCS.yaml
+      policyName: "label-nodes"
+      complianceType: musthave
+      metadata:
+        name: master1.core.tmetse.bos2.lab
+    - fileName: LABEL/LabelNodeOCS.yaml
+      policyName: "label-nodes"
+      complianceType: musthave
+      metadata:
+        name: master2.core.tmetse.bos2.lab
+    - fileName: LABEL/LabelNodeOCS.yaml
+      policyName: "label-nodes"
+      complianceType: musthave
+      metadata:
+        name: master3.core.tmetse.bos2.lab
+    - fileName: LABEL/LabelNodeRole750-i.yaml
+      policyName: "label-nodes"
+      complianceType: musthave
+      metadata:
+        name: worker1.core.tmetse.bos2.lab
+    - fileName: LABEL/LabelNodeRole750-m.yaml
+      policyName: "label-nodes"
+      complianceType: musthave
+      metadata:
+        name: worker2.core.tmetse.bos2.lab
+    - fileName: master-schedulable.yaml
+      policyName: "mno-config-policy"
+      complianceType: musthave
+    - fileName: master-ingress-router.yaml
+      policyName: "mno-config-policy"
+      complianceType: musthave
+
+    #
+    # Label node for MCP
+    #
+    #- fileName: LABEL/LabelNodeRole.yaml
+    #  policyName: "label-nodes"
+    #  metadata:
+    #    labels:
+    #      node-role.kubernetes.io/profile1: ""
+    #    name: worker151.core.tmetse.bos2.lab"
+    #
+    # Enable log forwarding to kafka
+    #
+    #- fileName: LOG/ClusterLogForwarder.yaml
+    #  policyName: "log-forwarder"
+    #  spec:
+    #    outputs:
+    #       - name: infra-logs
+    #         type: kafka
+    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/nec-site-infra-logs
+    #         secret:
+    #           name: kafka-secret
+    #       - name: audit-logs
+    #         type: kafka
+    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/nec-site-audit-logs
+    #         secret:
+    #           name: kafka-secret
+    #       - name: app-logs
+    #         type: kafka
+    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/nec-site-app-logs
+    #         secret:
+    #           name: kafka-secret
+    #    pipelines:
+    #      - name: nec-site-infra-logs
+    #        inputRefs:
+    #        - infrastructure
+    #        outputRefs:
+    #        - infra-logs
+    #        labels:
+    #          logType: "infra"
+    #      - name: nec-site-audit-logs
+    #        inputRefs:
+    #        - audit
+    #        outputRefs:
+    #        - audit-logs
+    #        labels:
+    #          logType: "audit"
+    #      - name: nec-site-app-logs
+    #        inputRefs:
+    #        - application
+    #        outputRefs:
+    #        - app-logs
+    #        labels:
+    #          logType: "app"
+ 
+    #
+    # Deploy Prometheus Kafka Adapter
+    #
+    #- fileName: MON/kafkaAdapDeployment.yaml
+    #  policyName: "dply-prom-kafka-adapter"
+    #  spec:
+    #    template:
+    #      spec:
+    #        containers:
+    #        - env:
+    #          - name: KAFKA_BROKER_LIST
+    #            value: mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443
+    #          - name: KAFKA_TOPIC
+    #            value: nec-site-ocp-metrics

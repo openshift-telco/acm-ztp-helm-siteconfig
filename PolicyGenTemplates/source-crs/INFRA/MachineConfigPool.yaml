@@ -1,0 +1,22 @@
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfigPool
+metadata:
+  annotations:
+    target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+    ran.openshift.io/ztp-deploy-wave: "1"
+  labels:
+    machineconfiguration.openshift.io/role: $mcp
+  name: $mcp
+spec:
+  machineConfigSelector:
+    matchExpressions:
+    - {
+        key: machineconfiguration.openshift.io/role,
+        operator: In,
+        values: [worker, $mcp]
+      }
+  nodeSelector:
+    matchLabels:
+      node-role.kubernetes.io/$mcp: "true"
+  paused: false

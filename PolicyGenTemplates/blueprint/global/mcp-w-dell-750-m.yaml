@@ -1,0 +1,133 @@
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "bp-global-mcp-w-dell-750-m"
+  namespace: "ztp-group"
+spec:
+  bindingRules:
+    # These policies will correspond to all clusters with this label:
+    mcp-w-dell-750-m: "true"
+  mcp: "mcp-w-dell-750-m"
+  sourceFiles:
+    - fileName: INFRA/MachineConfigPool.yaml
+      policyName: "base"
+      complianceType: musthave
+    - fileName: PerformanceProfile-label.yaml
+      policyName: "design"
+      metadata:
+        # if you change this name make sure the 'include' line in TunedPerformancePatch.yaml
+        # matches this name: include=openshift-node-performance-${PerformanceProfile.metadata.name}
+        # Also in file 'validatorCRs/informDuValidator.yaml': 
+        # name: 50-performance-${PerformanceProfile.metadata.name}
+        name: global-mcp-w-dell-750-m-performance-profile
+        #annotations:
+        #  kubeletconfig.experimental: |
+        #    {"systemReserved": {"cpu": "2000m","memory": "16Gi"}}
+      spec:
+        #additionalKernelArgs:
+        #- "idle=poll"
+        cpu:
+          # These must be tailored for the specific hardware platform
+          isolated: "2-31,34-63"
+          reserved: "0-1,32-33"
+        hugepages:
+          defaultHugepagesSize: 1G
+          pages:
+            - count: 64
+              size: 1G
+              node: 0 
+        realTimeKernel:
+          enabled: false
+    - fileName: TunedPerformancePatch.yaml
+      policyName: "design"
+      spec:
+        profile:
+          - name: global-mcp-w-dell-750-m-performance-patch
+            # Please note:
+            # - The 'include' line must match the associated PerformanceProfile name, following below pattern
+            #   include=openshift-node-performance-${PerformanceProfile.metadata.name}
+            # - The 'cmdline_crash' CPU set must match the 'isolated' set in the associated PerformanceProfile
+            # - When using the standard (non-realtime) kernel, remove the kernel.timer_migration override from
+            #   the [sysctl] section and remove the entire section if it is empty.
+            data: |
+              [main]
+              summary=Configuration changes profile inherited from performance created tuned
+              include=openshift-node-performance-global-mcp-w-dell-750-m-performance-profile
+              [bootloader]
+              cmdline_crash=nohz_full=3-31,35-63
+              [service]
+              service.stalld=start,enable
+
+            #  [scheduler]
+            #  group.ice-ptp=0:f:10:*:ice-ptp.*
+
+            #  [sysctl]
+            #  kernel.timer_migration=1
+
+            #  [service]
+            #  service.chronyd=stop,disable
+        recommend:
+          - machineConfigLabels:
+            profile: global-mcp-w-dell-750-m-performance-patch
+    #- fileName: PtpConfigSlave.yaml   # Change to PtpConfigSlaveCvl.yaml for ColumbiaVille NIC
+    #  policyName: "design"
+    #  metadata:
+    #    name: "du-ptp-slave"
+    #  spec:
+    #    profile:
+    #    - name: "slave"
+    #      # This interface must match the hardware in this group
+    #      interface: "ens2f0"
+    #      ptp4lOpts: "-2 -s --summary_interval -4"
+    #      phc2sysOpts: "-a -r -n 24"
+    #
+    #
+    #
+    - fileName: SriovNetworkNodePolicy-label.yaml
+      policyName: "design"
+      metadata:
+        name: "mcp-w-dell-750-m-nnp-eno12399-netd-m"
+      spec:
+        deviceType: netdevice
+        isRdma: false
+        nicSelector:
+          pfNames: ["eno12399#0-3"]
+        numVfs: 8
+        priority: 10
+        resourceName: sriov_netd
+    - fileName: SriovNetworkNodePolicy-label.yaml
+      policyName: "design"
+      metadata:
+        name: "mcp-w-dell-750-m-nnp-eno12399-vfio-m"
+      spec:
+        deviceType: vfio-pci
+        isRdma: false
+        nicSelector:
+          pfNames: ["eno12399#4-7"]
+        numVfs: 8
+        priority: 10
+        resourceName: sriov_vfio
+    - fileName: SriovNetworkNodePolicy-label.yaml
+      policyName: "design"
+      metadata:
+        name: "mcp-w-dell-750-m-nnp-ens2f0-netd-m"
+      spec:
+        deviceType: netdevice
+        isRdma: false
+        nicSelector:
+          pfNames: ["ens2f0#0-3"]
+        numVfs: 8
+        priority: 10
+        resourceName: sriov_netd_m
+    - fileName: SriovNetworkNodePolicy-label.yaml
+      policyName: "design"
+      metadata:
+        name: "mcp-w-dell-750-m-nnp-ens2f0-vfio-m"
+      spec:
+        deviceType: netdevice
+        isRdma: true
+        nicSelector:
+          pfNames: ["ens2f0#4-7"]
+        numVfs: 8
+        priority: 10
+        resourceName: sriov_vfio_m

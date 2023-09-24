@@ -1,0 +1,49 @@
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "sriov-w-du-dell-750-i"
+  namespace: "ztp-site"
+spec:
+  bindingRules:
+    # These policies will correspond to all clusters with this label:
+    sites: "core"
+  mcp: "mcp-w-du-dell-750-i"
+  sourceFiles:
+    - fileName: SriovNetwork.yaml
+      policyName: "mno-config-policy"
+      metadata:
+        name: "sriov-nw-du-fh-i"
+      spec:
+        resourceName: du_fh
+        vlan: 1144
+    - fileName: SriovNetworkNodePolicy-label.yaml
+      policyName: "mno-config-policy"
+      metadata:
+        name: "sriov-nnp-du-fh-i"
+      spec:
+        deviceType: netdevice
+        isRdma: false
+        nicSelector:
+          pfNames: ["eno12409"]
+        numVfs: 8
+        priority: 10
+        resourceName: du_fh
+    - fileName: SriovNetwork.yaml
+      policyName: "mno-config-policy"
+      metadata:
+        name: "sriov-nw-du-mh-i"
+      spec:
+        resourceName: du_mh
+        vlan: 1145
+    - fileName: SriovNetworkNodePolicy-label.yaml
+      policyName: "mno-config-policy"
+      metadata:
+        name: "sriov-nnp-du-mh-i"
+      spec:
+        deviceType: vfio-pci
+        isRdma: false
+        nicSelector:
+          pfNames: ["ens2f1"]
+        numVfs: 8
+        priority: 10
+        resourceName: du_mh

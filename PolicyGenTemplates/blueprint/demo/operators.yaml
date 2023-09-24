@@ -1,0 +1,157 @@
+---
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "bp-demo-operators"
+  namespace: "ztp-common"
+spec:
+  bindingRules:
+    # These policies will correspond to all clusters with this label:
+    blueprint-demo: "true"
+  sourceFiles:
+    # Create operators policies that will be installed in all Core clusters
+    #
+    # Disable default operator catalogs
+    #
+    - fileName: OperatorHub.yaml
+      policyName: "disconnected"
+    - fileName: CS.yaml
+      policyName: "disconnected"
+    - fileName: ICSP.yaml
+      policyName: "disconnected"
+    #
+    # Enable logging
+    # Some CRs being created in cluster specific PGT
+    #
+    #- fileName: ClusterLogNS.yaml
+    #  policyName: "logging-subscription"
+    #- fileName: ClusterLogOperGroup.yaml
+    #  policyName: "logging-subscription"
+    #- fileName: ClusterLogSubscription.yaml
+    #  policyName: "logging-subscription"
+    #  spec:
+    #    source: redhat-operator-index
+    #- fileName: ClusterLogging.yaml
+    #  policyName: "logging-instance"
+    #  spec:
+    #    collection:
+    #      logs:
+    #        type: "fluentd"
+    #        fluentd: {}
+    #
+    # Enable monitoring
+    # Some CRs being created in cluster specific PGT
+    #
+    #- fileName: MON/kafkaAdapNS.yaml
+    #  policyName: "monitor-subscription"
+    #- fileName: MON/UserWorkLoad.yaml
+    #  policyName: "monitor-subscription"
+    #- fileName: MON/kafkaAdapService.yaml
+    #  policyName: "kafka-adap-svc"
+    #- fileName: MON/OcpMonitoring.yaml
+    #  policyName: "enable-monitoring"
+    #
+    # SR-IOV operator
+    #
+    - fileName: SriovSubscriptionNS.yaml
+      policyName: "subscriptions"
+    - fileName: SriovSubscriptionOperGroup.yaml
+      policyName: "subscriptions"
+    - fileName: SriovOperatorStatus.yaml
+      policyName: "subscriptions"
+    - fileName: SriovSubscription.yaml
+      policyName: "subscriptions"
+      spec:
+        source: redhat-operator-index
+    #
+    # PTP operator
+    #
+    #- fileName: PtpSubscription.yaml
+    #  policyName: "subscriptions"
+    #  spec:
+    #    source: redhat-operator-index
+    #- fileName: PtpSubscriptionNS.yaml
+    #  policyName: "subscriptions"
+    #- fileName: PtpSubscriptionOperGroup.yaml
+    #  policyName: "subscriptions"
+    #- fileName: PtpOperatorStatus.yaml
+    #  policyName: "subscriptions"
+    #
+    # CNV operator
+    #
+    #- fileName: CNV/CnvNS.yaml
+    #  policyName: "subscriptions"
+    #- fileName: CNV/CnvOperGroup.yaml
+    #  policyName: "subscriptions"
+    #- fileName: CNV/CnvSubscription.yaml
+    #  policyName: "subscriptions"
+    #  spec:
+    #    source: redhat-operator-index
+    #- fileName: CNV/CnvHyperConverged.yaml
+    #  policyName: "subscriptions"
+    #
+    # LSO operator
+    #
+    #- fileName: LSO/LsoNS.yaml
+    #  policyName: "subscriptions"
+    #- fileName: LSO/LsoOperGroup.yaml
+    #  policyName: "subscriptions"
+    #- fileName: LSO/LsoSubscription.yaml
+    #  policyName: "subscriptions"
+    #  spec:
+    #    source: redhat-operator-index
+    - fileName: LSO/LsoVolumeSet.yaml
+      policyName: "subscriptions"
+    - fileName: StorageNS.yaml
+      policyName: "subscriptions"
+    - fileName: StorageOperGroup.yaml
+      policyName: "subscriptions"
+    - fileName: StorageSubscription.yaml
+      policyName: "subscriptions"
+      spec:
+        source: redhat-operator-index
+    - fileName: StorageOperatorStatus.yaml
+      policyName: "subscriptions"
+    #
+    # ODF operator
+    #
+    - fileName: ODF/OdfNS.yaml
+      policyName: "subscriptions"
+    - fileName: ODF/OdfOperGroup.yaml
+      policyName: "subscriptions"
+    - fileName: ODF/OdfSubscription.yaml
+      policyName: "subscriptions"
+      spec:
+        source: redhat-operator-index
+    - fileName: ODF/OdfStorageCluster.yaml
+      policyName: "design"
+    #
+    # OSPD operator
+    #
+    #- fileName: OSPDO/OspdONS.yaml
+    #  policyName: "subscriptions"
+    #- fileName: OSPDO/OspdOCatalog.yaml
+    #  policyName: "subscriptions"
+    #- fileName: OSPDO/OspdOOperGroup.yaml
+    #  policyName: "subscriptions"
+    #- fileName: OSPDO/OspdOSubscription.yaml
+    #  policyName: "subscriptions"
+    #
+    # Service Mesh Installation (optional)
+    #
+    #- fileName: ISTIO/Jaeger-subs.yaml
+    #  policyName: "subscriptions"
+    #  spec:
+    #    source: redhat-operator-index
+    #- fileName: ISTIO/Kiali-subs.yaml
+    #  policyName: "subscriptions"
+    #  spec:
+    #    source: redhat-operator-index
+    #- fileName: ISTIO/ServMesh-subs.yaml
+    #  policyName: "subscriptions"
+    #  spec:
+    #    source: redhat-operator-index
+    #- fileName: ISTIO/SmNs.yaml
+    #  policyName: "sm-cp"
+    #- fileName: ISTIO/ServMesh-CtrlPlane.yaml
+    #  policyName: "sm-cp"

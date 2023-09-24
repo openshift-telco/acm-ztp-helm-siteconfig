@@ -1,0 +1,19 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+    ran.openshift.io/ztp-deploy-wave: "1"
+  labels:
+    app.kubernetes.io/instance: operator-mirror-core.tmetse.bos2.lab
+  name: redhat-operator-index
+  namespace: openshift-marketplace
+spec:
+  displayName: TMETSE OperatorHub Quay Cache Proxy
+  image: >-
+    lab-registry.mgmt.tmetse.bos2.lab/cache-registryredhatio/redhat/redhat-operator-index:v4.12
+  publisher: Red Hat
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m

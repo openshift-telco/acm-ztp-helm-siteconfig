@@ -1,0 +1,32 @@
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  # The name will be used to generate the placementBinding name as {name}-placementBinding, the placementRule name as {name}-placementRule,
+  # and the policy name as {name}-{spec.sourceFiles[x].policyName}
+  name: "bp-global-validator-mcp-w-dell-650-i"
+  namespace: "ztp-group"
+spec:
+  # This policy will correspond to all clusters with label specified in bindingRules and
+  # without label specified in bindingExcludedRules.
+  bindingRules:
+    mcp-w-dell-650-i: "true"
+  bindingExcludedRules:
+    # The ztp-done label is used in coordination with the Topology Aware Lifecycle Operator(TALO).
+    # Please do not change this label.
+    ztp-done: ""
+  mcp: "mcp-w-dell-650-i"
+  sourceFiles:
+    # Create inform policy to validate configuration CRs that will be applied to all 3-node clusters
+    - fileName: validatorCRs/informMcpValidator.yaml
+      remediationAction: inform
+      policyName: "mcp-policy"
+      status:
+        configuration:
+          source:
+            - apiVersion: machineconfiguration.openshift.io/v1
+              kind: MachineConfig
+              name: 50-performance-global-mcp-w-dell-650-i-performance-profile
+      # This low setting is only valid if the validation policy is disconnected from the cluster at steady-state
+      # using a bindingExcludeRules entry with ztp-done
+      evaluationInterval:
+        compliant: 5s

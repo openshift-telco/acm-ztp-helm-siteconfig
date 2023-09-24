@@ -1,0 +1,56 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+  annotations:
+    ran.openshift.io/ztp-deploy-wave: "7"
+spec:
+  arbiter: {}
+  encryption:
+    kms: {}
+  externalStorage: {}
+  flexibleScaling: true
+  managedResources:
+    cephBlockPools:
+      reconcileStrategy: manage   # <-- Default value is manage
+    cephCluster: {}
+    cephConfig: {}
+    cephDashboard: {}
+    cephFilesystems: {}
+    cephNonResilientPools: {}
+    cephObjectStoreUsers: {}
+    cephObjectStores: {}
+    cephToolbox: {}
+  mirroring: {}
+  monDataDirHostPath: /var/lib/rook
+  multiCloudGateway:
+    reconcileStrategy: manage   # <-- Default value is manage
+  storageDeviceSets:
+  - config: {}
+    count: 9  # <-- Modify count to desired value. For each set of 3 disks increment the count by 1.
+    dataPVCTemplate:
+      metadata: {}
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: "100Mi"
+        storageClassName: localblock
+        volumeMode: Block
+      status: {}
+    name: ocs-deviceset
+    placement: 
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: cluster.ocs.openshift.io/openshift-storage
+              operator: In
+              values:
+              - "true"
+    portable: false
+    preparePlacement: {}
+    replica: 3
+    resources: {}

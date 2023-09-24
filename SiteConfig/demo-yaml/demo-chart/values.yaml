@@ -1,0 +1,151 @@
+nodes:
+  - hostName: "master1.demo.tmetse.bos2.lab"
+    role: "master"
+    bmcAddress: "redfish-virtualmedia+http://192.168.52.57:8080/redfish/v1/Systems/69f5f6cd-36c7-48c4-9afd-0d18d81dce28"
+    bootMACAddress: "52:54:00:3d:aa:72"
+    routes:
+      - interface: "enp1s0"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "enp1s0"
+      mac: "52:54:00:3d:aa:72"
+      IP: 100.65.211.203
+      prefix_length: 24
+    - name: "enp2s0"
+      mac: "52:54:01:3d:aa:72"
+  - hostName: "master2.demo.tmetse.bos2.lab"
+    role: "master"
+    bmcAddress: "redfish-virtualmedia+http://192.168.52.56:8080/redfish/v1/Systems/40097440-38f2-495a-ad91-505ae84b669a"
+    bootMACAddress: "52:54:00:89:ac:81"
+    routes:
+      - interface: "enp1s0"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "enp1s0"
+      mac: "52:54:00:89:ac:81"
+      IP: 100.65.211.204
+      prefix_length: 24
+    - name: "enp2s0"
+      mac: "52:54:01:89:ac:81"
+  - hostName: "master3.demo.tmetse.bos2.lab"
+    role: "master"
+    bmcAddress: "redfish-virtualmedia+http://192.168.52.55:8080/redfish/v1/Systems/3cdf7eb2-8fbf-4d70-a756-cd83b33847fd"
+    bootMACAddress: "52:54:00:e5:cc:49"
+    routes:
+      - interface: "enp1s0"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "enp1s0"
+      mac: "52:54:00:e5:cc:49"
+      IP: 100.65.211.205
+      prefix_length: 24
+    - name: "enp2s0"
+      mac: "52:54:01:e5:cc:49"
+  - hostName: "worker1.demo.tmetse.bos2.lab"
+    bmcAddress: "redfish-virtualmedia+https://192.168.52.159/redfish/v1/Systems/System.Embedded.1"
+    bootMACAddress: "b4:96:91:bb:dc:5c"
+    routes:
+      - interface: "eno12399.211"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "ens1f0"
+      mac: "b4:96:91:a5:01:b0"
+    - name: "ens2f0"
+      mac: "b4:96:91:a5:00:7c"
+    - name: "eno12399"
+      mac: "b4:96:91:bb:dc:5c"
+      vlans:
+        - vlan: "211"
+          IP: "100.65.211.159"
+          prefix_length: "24"
+  - hostName: "worker2.demo.tmetse.bos2.lab"
+    bmcAddress: "redfish-virtualmedia+https://192.168.52.160/redfish/v1/Systems/System.Embedded.1"
+    bootMACAddress: "b4:96:91:bb:d9:90"
+    routes:
+      - interface: "eno12399.211"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "ens1f0"
+      mac: "b4:96:91:a5:00:b4"
+    - name: "ens2f0"
+      mac: "b4:96:91:a5:02:78"
+    - name: "eno12399"
+      mac: "b4:96:91:bb:d9:90"
+      vlans:
+        - vlan: "211"
+          IP: "100.65.211.160"
+          prefix_length: "24"
+  - hostName: "worker3.demo.tmetse.bos2.lab"
+    bmcAddress: "redfish-virtualmedia+https://192.168.52.161/redfish/v1/Systems/System.Embedded.1"
+    bootMACAddress: "b4:96:91:bb:d7:5a"
+    routes:
+      - interface: "eno12399.211"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "ens1f0"
+      mac: "b4:96:91:a3:f2:84"
+    - name: "ens2f0"
+      mac: "b4:96:91:a3:f2:54"
+    - name: "eno12399"
+      mac: "b4:96:91:bb:d7:5a"
+      vlans:
+        - vlan: "211"
+          IP: "100.65.211.161"
+          prefix_length: "24"
+  - hostName: "worker4.demo.tmetse.bos2.lab"
+    bmcAddress: "redfish-virtualmedia+https://192.168.52.170/redfish/v1/Systems/System.Embedded.1"
+    bootMACAddress: "b4:96:91:c7:f5:26"
+    routes:
+      - interface: "bond0.211"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "bond0"
+      type: bond
+      ports:
+       - name: "ens2f1"
+       - name: "eno12409"
+      vlans:
+        - vlan: "211"
+          IP: "100.65.211.170"
+          prefix_length: "24"
+    - name: "ens2f0"
+      mac: "b4:96:91:c7:f5:26"
+    - name: "ens2f1"
+      mac: "b4:96:91:c7:f5:27"
+    - name: "eno12399"
+      mac: "b4:96:91:d3:7f:20"
+    - name: "eno12409"
+      mac: "b4:96:91:d3:7f:21"
+  - hostName: "worker5.demo.tmetse.bos2.lab"
+    bmcAddress: "redfish-virtualmedia+https://192.168.52.172/redfish/v1/Systems/System.Embedded.1"
+    bootMACAddress: "08:c0:eb:36:ed:08"
+    routes:
+      - interface: "bond0.211"
+        destination: "0.0.0.0/0"
+        next_hop: "100.65.211.1"
+    interfaces:
+    - name: "bond0"
+      type: bond
+      ports:
+       - name: "ens2f1"
+       - name: "eno12409"
+      vlans:
+        - vlan: "211"
+          IP: "100.65.211.172"
+          prefix_length: "24"
+    - name: "ens2f0"
+      mac: "08:c0:eb:36:ed:08"
+    - name: "ens2f1"
+      mac: "08:c0:eb:36:ed:09"
+    - name: "eno12399"
+      mac: "b4:96:91:d6:79:9c"
+    - name: "eno12409"
+      mac: "b4:96:91:d6:79:9d"
+

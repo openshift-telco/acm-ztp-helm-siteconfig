@@ -1,0 +1,22 @@
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "ptp-w-du-dell-750-m"
+  namespace: "ztp-site"
+spec:
+  bindingRules:
+    # These policies will correspond to all clusters with this label:
+    sites: "core"
+  mcp: "mcp-w-du-dell-750-m"
+  sourceFiles:
+    - fileName: PtpConfigSlaveCvl.yaml   # Change to PtpConfigSlaveCvl.yaml for ColumbiaVille NIC
+      policyName: "mno-config-policy"
+      metadata:
+        name: "du-ptp-slave"
+      spec:
+        profile:
+        - name: "slave"
+          # This interface must match the hardware in this group
+          interface: "eno12409"
+          ptp4lOpts: "-2 -s --summary_interval -4"
+          phc2sysOpts: "-a -r -n 24"

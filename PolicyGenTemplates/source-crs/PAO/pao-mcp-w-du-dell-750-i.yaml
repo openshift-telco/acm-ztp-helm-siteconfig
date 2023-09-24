@@ -1,0 +1,34 @@
+---
+apiVersion: performance.openshift.io/v2
+kind: PerformanceProfile
+metadata:
+  name: mcp-w-du-dell-750-i
+  annotations:
+    ran.openshift.io/ztp-deploy-wave: "3"
+    kubeletconfig.experimental: |
+      {"systemReserved": {"cpu": "2000m","memory": "16Gi"}}
+spec:
+  additionalKernelArgs:
+  - "idle=poll"
+  cpu:
+    #
+    # Include all CPUs not in the reserved list
+    #
+    isolated: '2-31,34-63'
+    #
+    # House keeping CPUs. Calculated as:
+    # number of IRQ / 220
+    # where: number of IRQ = cat /proc/interrupts  | wc -l
+    reserved: '0-1,32-33'
+  hugepages:
+    defaultHugepagesSize: 1G
+    pages:
+      - size: 1G
+        count: 64
+        node: 0
+  numa:
+    topologyPolicy: restricted
+  realTimeKernel:
+    enabled: true
+  nodeSelector:
+    node-role.kubernetes.io/mcp-w-du-dell-750-i: "true"

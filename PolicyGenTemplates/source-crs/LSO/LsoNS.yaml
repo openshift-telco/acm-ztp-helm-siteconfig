@@ -1,0 +1,10 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  labels:
+    kubernetes.io/metadata.name: openshift-local-storage
+  name: openshift-local-storage
+  annotations:
+    ran.openshift.io/ztp-deploy-wave: "5"
+---
+
