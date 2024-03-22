@@ -7,6 +7,16 @@ THE REFERENCES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IM
 
 #############################################################################
 
+# NOTE:
+
+This repo covers 3 deploymooent scenarios based on OCP4.12 as follows:
+- The use of Helm Charts to template the creation of the node SIteConfig configurations (described below in this README).
+- The deployment of a 3xM and 5xW with ODF named "demo" using Kustomize with Helm and without.
+- The deployment of a 3xM and 2xW without ODF named "demo2" using Kustomize.
+
+You'd need to uncomment and comment out appropriate lines in the SiteConfig/kustomization.yaml and copy the required topology *-kustomization.yaml to PolicyGenTemplates/kustomization.yaml to select demo or demo2 topologies.
+
+
 # Introduction
 
 The topology below illustrates the physical connectivity of the nodes deployed by this ZTP automation. The Master nodes are 3 VMs each running on a different RHEL8 KVM hypervisor. The 5 worker nodes are mix of Dell R650 (nodes 159-161) and R750 (nodes 170 and 172) machines. The R650 nodes are identically configured and the R750s are "almost" identically configured, the only difference being node 172 has a mix of Mellanox and Intel cards whereas  node 170 only has Intel cards.
