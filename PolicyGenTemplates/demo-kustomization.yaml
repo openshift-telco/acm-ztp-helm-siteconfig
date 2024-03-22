@@ -1,16 +1,18 @@
-# DEMO2 for 3xM and 2xW without ODF
+# DEMO for 3xM and 5xW with ODF
 generators:
 # Blueprint demo yamls
-- blueprint/demo2/operators.yaml
-- blueprint/demo2/site.yaml
+- blueprint/demo/operators.yaml
+- blueprint/demo/site.yaml
+- blueprint/global/mcp-w-dell-650-i.yaml
 - blueprint/global/mcp-w-dell-750-i.yaml
 - blueprint/global/mcp-w-dell-750-m.yaml
+- blueprint/global/validator-mcp-w-dell-650-i.yaml
 - blueprint/global/validator-mcp-w-dell-750-i.yaml
 - blueprint/global/validator-mcp-w-dell-750-m.yaml
 - blueprint/global/validator-sriov.yaml
 #
 # Cluster demo
-- cluster/demo/demo2.yaml
+- cluster/demo/demo.yaml
 - cluster/demo/onboard.yaml
 
 resources:

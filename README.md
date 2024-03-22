@@ -48,7 +48,8 @@ One of the challenges faced when creating this approach was how to chain/link th
 
 
 ```
-├── demo-secrets.yaml
+├── ztp
+|   └── demo-secrets.yaml
 ├── demo-yaml
 │   ├── demo-chart
 │   │   ├── Chart.yaml
@@ -85,7 +86,7 @@ generators:
 - demo-yaml
 
 resources:
-- demo-secrets.yaml
+- ztp/demo-secrets.yaml
 ```
 
 

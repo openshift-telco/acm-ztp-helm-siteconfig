@@ -40,6 +40,8 @@ spec:
           enabled: false
     - fileName: TunedPerformancePatch.yaml
       policyName: "design"
+      metadata:
+        name: global-mcp-w-dell-750-m-performance-patch
       spec:
         profile:
           - name: global-mcp-w-dell-750-m-performance-patch

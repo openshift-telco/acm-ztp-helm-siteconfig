@@ -1,0 +1,41 @@
+---
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "cl-demo"
+  namespace: "ztp-site"
+spec:
+  bindingRules:
+    # These policies will correspond to all clusters with this label:
+    blueprint-demo: "true"
+  sourceFiles:
+    #
+    # Label node for MCP
+    #
+    - fileName: LABEL/LabelNodeRole.yaml
+      policyName: "design"
+      complianceType: musthave
+      metadata:
+        name: worker4.demo.tmetse.bos2.lab
+        labels:
+          node-role.kubernetes.io/mcp-w-dell-750-i: "true"
+    - fileName: LABEL/LabelNodeRole.yaml
+      policyName: "design"
+      complianceType: musthave
+      metadata:
+        name: worker5.demo.tmetse.bos2.lab
+        labels:
+          node-role.kubernetes.io/mcp-w-dell-750-m: "true"
+    #
+    # Label node for sr-iov
+    #
+    - fileName: LABEL/LabelNodeSriov.yaml
+      policyName: "design"
+      complianceType: musthave
+      metadata:
+        name: worker4.demo.tmetse.bos2.lab
+    - fileName: LABEL/LabelNodeSriov.yaml
+      policyName: "design"
+      complianceType: musthave
+      metadata:
+        name: worker5.demo.tmetse.bos2.lab

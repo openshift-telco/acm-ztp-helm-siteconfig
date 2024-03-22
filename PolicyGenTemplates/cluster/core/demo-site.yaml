@@ -64,35 +64,35 @@ spec:
     #    outputs:
     #       - name: infra-logs
     #         type: kafka
-    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/nec-site-infra-logs
+    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/demo-site-infra-logs
     #         secret:
     #           name: kafka-secret
     #       - name: audit-logs
     #         type: kafka
-    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/nec-site-audit-logs
+    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/demo-site-audit-logs
     #         secret:
     #           name: kafka-secret
     #       - name: app-logs
     #         type: kafka
-    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/nec-site-app-logs
+    #         url: tls://mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443/demo-site-app-logs
     #         secret:
     #           name: kafka-secret
     #    pipelines:
-    #      - name: nec-site-infra-logs
+    #      - name: demo-site-infra-logs
     #        inputRefs:
     #        - infrastructure
     #        outputRefs:
     #        - infra-logs
     #        labels:
     #          logType: "infra"
-    #      - name: nec-site-audit-logs
+    #      - name: demo-site-audit-logs
     #        inputRefs:
     #        - audit
     #        outputRefs:
     #        - audit-logs
     #        labels:
     #          logType: "audit"
-    #      - name: nec-site-app-logs
+    #      - name: demo-site-app-logs
     #        inputRefs:
     #        - application
     #        outputRefs:
@@ -113,4 +113,4 @@ spec:
     #          - name: KAFKA_BROKER_LIST
     #            value: mgnt-kafka-kafka-bootstrap-kafka-cluster.apps.mano-npss.tmetse.bos2.lab:443
     #          - name: KAFKA_TOPIC
-    #            value: nec-site-ocp-metrics
+    #            value: demo-site-ocp-metrics

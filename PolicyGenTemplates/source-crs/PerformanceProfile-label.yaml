@@ -23,7 +23,7 @@ spec:
         count: $count
         node: $node
   machineConfigPoolSelector:
-    pools.operator.machineconfiguration.openshift.io/$mcp: ""
+    pools.operator.machineconfiguration.openshift.io/$mcp: 'true'
   nodeSelector:
     node-role.kubernetes.io/$mcp: 'true'
   numa:

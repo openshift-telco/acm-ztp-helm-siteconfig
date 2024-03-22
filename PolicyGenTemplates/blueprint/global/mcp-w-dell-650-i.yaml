@@ -41,6 +41,8 @@ spec:
           enabled: false
     - fileName: TunedPerformancePatch.yaml
       policyName: "design"
+      metadata:
+        name: global-mcp-w-dell-650-i-performance-patch
       spec:
         profile:
           - name: global-mcp-w-dell-650-i-performance-patch
